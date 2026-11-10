@@ -1,0 +1,12 @@
+# Netlify converts best.pt to ONNX during the build, then publishes this folder.
+[build]
+  command = "bash build.sh"
+  publish = "."
+
+[build.environment]
+  PYTHON_VERSION = "3.11"
+
+[[headers]]
+  for = "/model/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

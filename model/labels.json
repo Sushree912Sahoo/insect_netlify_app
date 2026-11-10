@@ -1,0 +1,4 @@
+{
+  "imgsz": 640,
+  "names": ["Brown_Plant_Hopper", "Grass_Hopper", "Green_leaf_hopper", "Gundhi_Bug-Adult-Nymph-", "Leaf_Floder-larva-", "Yellow_stem_borer"]
+}

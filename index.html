@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InsectID – IIT Bhubaneswar</title>
+<style>
+:root{--bg:#f1f7fd;--card:#fff;--ac:#185fa5;--acl:#e6f1fb;--tx:#042c53;--mu:#5a6c80;--bd:#d5e4f3;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+aside{background:var(--card);border-right:1px solid var(--bd);padding:16px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:6px 6px 18px;margin-bottom:8px;border-bottom:1px solid var(--bd)}
+.brand img{height:96px}.brand b{font-size:24px;display:block;line-height:1.1}.brand span{font-size:14px;color:var(--mu)}
+.nv{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:10px;color:var(--mu);text-decoration:none;font-size:17px}
+.nv svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nv.on{background:var(--acl);color:var(--ac);font-weight:600}
+.foot{margin-top:auto;padding-top:14px;font-size:13px;color:var(--mu);padding:6px}
+main{padding:28px 40px;width:100%;min-width:0}
+h1{font-size:32px;margin:0 0 2px}.sub{color:var(--mu);font-size:16px;margin:0 0 16px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:22px}
+.metrics .card{margin:0}.metrics small{color:var(--mu);font-size:15px;display:block}.metrics b{font-size:27px;font-weight:600}
+h2{font-size:17px;font-weight:600;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mu{color:var(--mu);font-size:16px}
+#drop{border:2px dashed var(--ac);border-radius:12px;background:var(--bg);padding:40px 16px;text-align:center;cursor:pointer}
+#drop.over{background:var(--acl)}#drop.small{padding:18px}
+#drop svg{width:34px;height:34px;stroke:var(--ac);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#drop.small svg{display:none}
+#drop b{display:block;font-size:20px}
+.cols{display:grid;grid-template-columns:1.4fr 1fr;gap:22px}.cols .card{margin:0}
+.wrapcols{margin-bottom:22px}
+#wrap{width:100%;min-height:200px}
+#stage{position:relative;display:inline-block;line-height:0;touch-action:none;user-select:none;border-radius:8px;overflow:visible}
+#img{display:block;max-width:none;border-radius:8px}
+#shade{position:absolute;inset:0;background:rgba(4,44,83,.45);pointer-events:none;border-radius:8px}
+#box{position:absolute;border:2px solid #fff;outline:2px solid var(--ac);cursor:move}
+.h{position:absolute;width:14px;height:14px;background:#fff;border:2px solid var(--ac);border-radius:50%;margin:-7px 0 0 -7px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.pill{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:6px 16px;font-size:15px;cursor:pointer}
+.pill.on{background:var(--acl);border-color:var(--ac);color:var(--ac);font-weight:600}
+button.go{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:12px 24px;font-size:17px;font-weight:600;cursor:pointer}
+button.sec{background:var(--card);color:var(--ac);border:1px solid var(--ac);border-radius:8px;padding:9px 18px;font-size:16px;font-weight:600;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+input[type=number]{width:84px;border:1px solid var(--bd);border-radius:8px;padding:7px 9px;color:var(--tx);background:var(--card)}
+.chip{display:inline-block;background:var(--acl);color:var(--ac);border-radius:24px;padding:5px 16px;font-size:16px;font-weight:600;margin:0 6px 6px 0}
+.chip.g{background:#eef1f5;color:var(--mu)}
+.bar{display:flex;align-items:center;gap:8px;font-size:15px;margin:5px 0}
+.bar span:first-child{width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar i{flex:1;height:7px;background:var(--acl);border-radius:4px;overflow:hidden}.bar i b{display:block;height:100%;background:var(--ac)}
+canvas{width:100%;border-radius:8px;border:1px solid var(--bd);display:block;margin-top:10px}
+.empty{border:1px dashed var(--bd);border-radius:12px;padding:70px 14px;text-align:center;color:var(--mu);font-size:16px;background:var(--bg)}
+.err{background:#fdecea;color:#8a2a1c;border-radius:8px;padding:8px 12px;font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:16px}th{text-align:left;color:var(--mu);font-weight:600;border-bottom:1px solid var(--bd);padding:10px 10px}
+td{padding:12px 10px;border-bottom:1px solid var(--bd)}tr:last-child td{border-bottom:0}.tw{overflow-x:auto}
+@media(max-width:860px){body{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}.foot{display:none}.cols{grid-template-columns:1fr}main{padding:14px}}
+</style></head><body>
+<aside>
+ <div class="brand"><img src="assets/iitbbs_logo.png" alt="IIT Bhubaneswar"><div><b>InsectID</b><span>IIT Bhubaneswar</span></div></div>
+ <a href="#" class="nv on" data-t="sec-upload"><svg viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg>Upload</a>
+ <a href="#" class="nv" data-t="sec-roi"><svg viewBox="0 0 24 24"><path d="M8 5v10a1 1 0 0 0 1 1h10M5 8h10a1 1 0 0 1 1 1v10"/></svg>ROI</a>
+ <a href="#" class="nv" data-t="sec-res"><svg viewBox="0 0 24 24"><path d="M9 9v-1a3 3 0 0 1 6 0v1M8 9h8a1 1 0 0 1 1 1v3a5 5 0 0 1-10 0v-3a1 1 0 0 1 1-1zM12 20v-9M3 13h4M17 13h4"/></svg>Results</a>
+ <a href="#" class="nv" data-t="sec-hist"><svg viewBox="0 0 24 24"><path d="M12 8v4l2 2M3.05 11a9 9 0 1 1 .5 4M3 4v7h7"/></svg>History</a>
+ <div class="foot">YOLO11 · runs in your browser<br><b id="mstat">Loading model…</b></div>
+</aside>
+<main>
+<h1>Insect detection in crops</h1><p class="sub">Upload a photo, select the region of interest, and run the model. Everything runs in your browser, so your photos are not uploaded anywhere.</p>
+<div style="background:#fff7e0;border:1px solid #f0d58a;color:#6b4e00;border-radius:10px;padding:10px 14px;margin:-4px 0 20px;font-size:15px">Unofficial research prototype. This is not an official IIT Bhubaneswar service, and results may be wrong.</div>
+
+<div class="metrics">
+ <div class="card"><small>Detections (this run)</small><b id="m1">–</b></div>
+ <div class="card"><small>Top class</small><b id="m2" style="font-size:20px;line-height:40px">–</b></div>
+ <div class="card"><small>Confidence</small><b id="m3">–</b></div>
+ <div class="card"><small>Saved in history</small><b id="m4">0</b></div>
+</div>
+
+<div class="card" id="sec-upload"><h2>Upload image</h2>
+ <div id="drop"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5H7z"/><path d="M12 12v6m0-6-2.5 2.5M12 12l2.5 2.5"/></svg>
+ <b id="dt">Drop an insect photo here</b><span class="mu" id="ds">or click to browse from your device</span><input id="file" type="file" accept="image/*" hidden></div></div>
+
+<div class="cols wrapcols">
+ <div class="card" id="sec-roi"><h2>Select the region of interest <span class="mu" id="dim"></span></h2>
+  <div id="roiEmpty" class="empty">Your image and the resizable ROI box will appear here.</div>
+  <div id="roiBody" hidden>
+   <div id="wrap"><div id="stage"><img id="img" alt="Uploaded insect photo"><div id="shade"></div><div id="box"></div></div></div>
+   <div class="row" id="ratios"><span class="mu">Ratio</span><button class="pill on" data-r="0">Free</button><button class="pill" data-r="1">1:1</button><button class="pill" data-r="1.3333">4:3</button><button class="pill" data-r="1.7778">16:9</button><button class="pill" id="reset" style="margin-left:auto">Reset box</button></div>
+   <p class="mu" style="margin:8px 0 0">Drag the box to move it. Drag the round handles to expand or contract it.</p></div></div>
+ <div class="card" id="sec-res"><h2>Detection result</h2>
+  <div class="row" style="margin:0 0 10px"><label class="mu">Min confidence <input id="conf" type="number" min="0.05" max="0.95" step="0.05" value="0.25"></label><button class="go" id="run">Run detection</button></div>
+  <div id="res"><div class="empty">Results appear here after you run detection.</div></div>
+  <canvas id="out" hidden></canvas></div>
+</div>
+
+<div class="card" id="sec-hist"><h2>History <span><button class="sec" id="csv">Download CSV</button> <button class="sec" id="clr" style="color:var(--mu);border-color:var(--bd)">Clear</button></span></h2>
+ <div class="tw"><table><thead><tr><th>Time</th><th>File</th><th>Insect</th><th>Stage</th><th>Confidence</th></tr></thead><tbody id="hb"></tbody></table></div></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const img=$('img'),box=$('box'),shade=$('shade'),crop=document.createElement('canvas');
+let B={x:0,y:0,w:0,h:0},W=0,H=0,ratio=0,drag=null,fname='image',rows=[],loaded=false;
+try{rows=JSON.parse(localStorage.getItem('insect_rows')||'[]')}catch(e){rows=[]}
+const save=()=>{try{localStorage.setItem('insect_rows',JSON.stringify(rows.slice(-500)))}catch(e){}};
+
+document.querySelectorAll('.nv').forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll('.nv').forEach(x=>x.classList.remove('on'));a.classList.add('on');$(a.dataset.t).scrollIntoView({behavior:'smooth',block:'start'})});
+
+['nw','n','ne','e','se','s','sw','w'].forEach(k=>{const d=document.createElement('div');d.className='h';d.dataset.k=k;
+ const p={nw:[0,0],n:[50,0],ne:[100,0],e:[100,50],se:[100,100],s:[50,100],sw:[0,100],w:[0,50]}[k];
+ d.style.left=p[0]+'%';d.style.top=p[1]+'%';d.style.cursor=k+'-resize';box.appendChild(d)});
+
+function fit(){const nw=img.naturalWidth,nh=img.naturalHeight,s=Math.min($('wrap').clientWidth/nw,640/nh);
+ W=Math.round(nw*s);H=Math.round(nh*s);img.style.width=W+'px';img.style.height=H+'px'}
+function load(f){
+ if(!f||!f.type.startsWith('image/'))return;fname=f.name;
+ img.onload=()=>{$('roiEmpty').hidden=true;$('roiBody').hidden=false;loaded=true;$('drop').classList.add('small');
+  $('dt').textContent='Replace image';$('ds').textContent=fname;reset();
+  $('res').innerHTML='<div class="empty">Choose a region, then run detection.</div>';$('out').hidden=true};
+ img.src=URL.createObjectURL(f)}
+function reset(){fit();let w=W*.55,h=H*.55;if(ratio){h=w/ratio;if(h>H*.9){h=H*.9;w=h*ratio}}B={x:(W-w)/2,y:(H-h)/2,w,h};draw()}
+function draw(){Object.assign(box.style,{left:B.x+'px',top:B.y+'px',width:B.w+'px',height:B.h+'px'});
+ shade.style.clipPath=`polygon(evenodd,0 0,${W}px 0,${W}px ${H}px,0 ${H}px,0 0,${B.x}px ${B.y}px,${B.x}px ${B.y+B.h}px,${B.x+B.w}px ${B.y+B.h}px,${B.x+B.w}px ${B.y}px,${B.x}px ${B.y}px)`;
+ const s=img.naturalWidth/W;crop.width=Math.max(1,Math.round(B.w*s));crop.height=Math.max(1,Math.round(B.h*s));
+ crop.getContext('2d').drawImage(img,B.x*s,B.y*s,B.w*s,B.h*s,0,0,crop.width,crop.height);
+ $('dim').textContent=crop.width+' × '+crop.height+' px'}
+
+box.addEventListener('pointerdown',e=>{e.preventDefault();box.setPointerCapture(e.pointerId);drag={k:e.target.dataset.k||'move',px:e.clientX,py:e.clientY,b:{...B}}});
+box.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.px,dy=e.clientY-drag.py,o=drag.b;
+ if(drag.k==='move'){B.x=Math.min(Math.max(0,o.x+dx),W-o.w);B.y=Math.min(Math.max(0,o.y+dy),H-o.h);draw();return}
+ const k=drag.k;let l=o.x,t=o.y,r=o.x+o.w,b=o.y+o.h;
+ if(k.includes('w'))l+=dx;if(k.includes('e'))r+=dx;if(k.includes('n'))t+=dy;if(k.includes('s'))b+=dy;
+ let w=r-l,h=b-t;if(w<30||h<30)return;
+ if(ratio){if(k.includes('e')||k.includes('w'))h=w/ratio;else w=h*ratio;
+  if(k.includes('w'))l=r-w;else if(k.includes('e'))r=l+w;else{const c=o.x+o.w/2;l=c-w/2;r=l+w}
+  if(k.includes('n'))t=b-h;else if(k.includes('s'))b=t+h;else{const c=o.y+o.h/2;t=c-h/2;b=t+h}}
+ if(l<0||t<0||r>W+.5||b>H+.5||r-l<30||b-t<30)return;
+ B={x:l,y:t,w:r-l,h:b-t};draw()});
+['pointerup','pointercancel'].forEach(n=>box.addEventListener(n,()=>drag=null));
+addEventListener('resize',()=>{if(loaded)reset()});
+
+const dz=$('drop');dz.onclick=()=>$('file').click();$('file').onchange=e=>load(e.target.files[0]);
+['dragenter','dragover'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.add('over')}));
+['dragleave','drop'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.remove('over')}));
+dz.addEventListener('drop',e=>load(e.dataTransfer.files[0]));
+document.querySelectorAll('#ratios .pill[data-r]').forEach(b=>b.onclick=()=>{document.querySelectorAll('#ratios .pill[data-r]').forEach(x=>x.classList.remove('on'));b.classList.add('on');ratio=+b.dataset.r;reset()});
+$('reset').onclick=reset;
+
+function metrics(n,top,conf){$('m1').textContent=n;$('m2').textContent=top||'–';$('m3').textContent=conf!=null?Math.round(conf*100)+'%':'–';$('m4').textContent=rows.filter(r=>r[4]!=='none').length}
+function hist(){const body=$('hb');const list=rows.slice(-50).reverse();
+ body.innerHTML=list.length?list.map(r=>`<tr><td>${new Date(r[0]).toLocaleString()}</td><td>${r[1]}</td><td>${r[4]==='none'?'<span class="mu">none detected</span>':r[4]}</td><td>${r[5]||'<span class="mu">–</span>'}</td><td>${r[6]?(r[6]*100).toFixed(1)+'%':'–'}</td></tr>`).join(''):'<tr><td colspan="5" class="mu" style="text-align:center;padding:22px">No detections yet. Run a detection and it will be saved here.</td></tr>';
+ $('m4').textContent=rows.filter(r=>r[4]!=='none').length}
+
+function show(r){
+ const out=$('out'),x=out.getContext('2d');out.width=crop.width;out.height=crop.height;x.drawImage(crop,0,0);out.hidden=false;
+ const now=new Date().toISOString();
+ if(r.detections){
+  x.lineWidth=Math.max(2,out.width/180);const fs=Math.max(12,Math.round(out.width/26));x.font=fs+'px sans-serif';
+  r.detections.forEach(d=>{const[a,b,c,e]=d.box;x.strokeStyle='#2b9bff';x.strokeRect(a*out.width,b*out.height,(c-a)*out.width,(e-b)*out.height);
+   const t=d.label.replace(/_/g,' ')+' '+Math.round(d.confidence*100)+'%',tw=x.measureText(t).width+8;
+   const lx=Math.min(Math.max(0,a*out.width),out.width-tw),ly=Math.max(fs+4,b*out.height);
+   x.fillStyle='#185fa5';x.fillRect(lx,ly-fs-4,tw,fs+4);x.fillStyle='#fff';x.fillText(t,lx+4,ly-4)});
+  if(!r.detections.length){$('res').innerHTML='<div class="chip g">No insect detected</div><div class="mu">Try a lower minimum confidence or a tighter region.</div>';
+   rows.push([now,fname,r.model,'','none','','','','','','']);metrics(0,'none',null);save();hist();return}
+  const t=r.detections[0];
+  $('res').innerHTML=`<span class="chip">${t.insect}</span>${t.stage?`<span class="chip">${t.stage}</span>`:'<span class="chip g">Stage not in class name</span>'}<span class="chip">${Math.round(t.confidence*100)}%</span>
+   <div class="mu" style="margin:4px 0 6px">${r.detections.length} detection(s) · model ${r.model}</div>`+
+   r.detections.slice(0,6).map(d=>`<div class="bar"><span title="${d.label}">${d.label}</span><i><b style="width:${Math.round(d.confidence*100)}%"></b></i><span style="width:42px;text-align:right">${(d.confidence*100).toFixed(1)}%</span></div>`).join('');
+  r.detections.forEach(d=>rows.push([now,fname,r.model,d.label,d.insect,d.stage||'',+d.confidence.toFixed(4),...d.box.map(v=>+v.toFixed(4))]));
+  metrics(r.detections.length,t.insect,t.confidence);
+ }else{
+  $('res').innerHTML=`<span class="chip">${r.insect}</span>${r.stage?`<span class="chip">${r.stage}</span>`:''}<div class="mu">model ${r.model}</div>`;
+  const cf=Math.max(...r.insect_probs);rows.push([now,fname,r.model,'',r.insect,r.stage||'',+cf.toFixed(4),'','','','']);metrics(1,r.insect,cf);
+ }
+ save();hist()}
+
+/* ===== In-browser YOLO11 detection (onnxruntime-web) ===== */
+const CFG={imgsz:640,names:[]};
+const SW=['adult','nymph','larva','pupa','egg'];
+function splitLabel(n){const t=n.split(/[-_\s]+/).filter(Boolean);
+ const st=t.filter(w=>SW.includes(w.toLowerCase())).map(w=>w[0].toUpperCase()+w.slice(1).toLowerCase());
+ return[t.filter(w=>!SW.includes(w.toLowerCase())).join(' ')||n,st.length?st.join(' / '):null]}
+function iouOf(a,b){const x1=Math.max(a[0],b[0]),y1=Math.max(a[1],b[1]),x2=Math.min(a[2],b[2]),y2=Math.min(a[3],b[3]);
+ const i=Math.max(0,x2-x1)*Math.max(0,y2-y1),u=(a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-i;return u>0?i/u:0}
+function nms(c,iou){c.sort((p,q)=>q.s-p.s);const keep=[];
+ for(const a of c.slice(0,300)){let ok=true;for(const k of keep){if(k.c===a.c&&iouOf(a.b,k.b)>iou){ok=false;break}}if(ok)keep.push(a)}return keep}
+/* data: Float32Array, dm: output dims [1,4+nc,N] or [1,N,4+nc]; returns boxes in ORIGINAL crop pixels */
+function decodeYolo(data,dm,conf,sc,px,py,W,H,iou){
+ let C,N,get;if(dm[1]<dm[2]){C=dm[1];N=dm[2];get=(i,k)=>data[k*N+i]}else{N=dm[1];C=dm[2];get=(i,k)=>data[i*C+k]}
+ const nc=C-4,cand=[];
+ for(let i=0;i<N;i++){let best=0,bc=-1;for(let k=0;k<nc;k++){const v=get(i,4+k);if(v>best){best=v;bc=k}}
+  if(best<conf)continue;const cx=get(i,0),cy=get(i,1),w=get(i,2),h=get(i,3);
+  const cl=(v,m)=>Math.min(Math.max(v,0),m);
+  cand.push({c:bc,s:best,b:[cl((cx-w/2-px)/sc,W),cl((cy-h/2-py)/sc,H),cl((cx+w/2-px)/sc,W),cl((cy+h/2-py)/sc,H)]})}
+ return{nc,dets:nms(cand,iou)}}
+
+let session=null,modelErr='';
+const modelReady=(async()=>{try{
+ try{const r=await fetch('model/labels.json');if(r.ok){const j=await r.json();CFG.imgsz=j.imgsz||640;CFG.names=j.names||[]}}catch(e){}
+ ort.env.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';ort.env.wasm.numThreads=1;
+ session=await ort.InferenceSession.create('model/best.onnx',{executionProviders:['wasm']});
+ $('mstat').textContent='Model ready';
+}catch(e){modelErr=e.message||String(e);$('mstat').textContent='Model not loaded'}})();
+
+async function detect(cv,conf){
+ const S=CFG.imgsz,sc=Math.min(S/cv.width,S/cv.height),nw=Math.round(cv.width*sc),nh=Math.round(cv.height*sc),
+  px=Math.floor((S-nw)/2),py=Math.floor((S-nh)/2);
+ const t=document.createElement('canvas');t.width=t.height=S;const x=t.getContext('2d');
+ x.fillStyle='rgb(114,114,114)';x.fillRect(0,0,S,S);x.drawImage(cv,px,py,nw,nh);
+ const d=x.getImageData(0,0,S,S).data,n=S*S,f=new Float32Array(3*n);
+ for(let i=0;i<n;i++){f[i]=d[i*4]/255;f[n+i]=d[i*4+1]/255;f[2*n+i]=d[i*4+2]/255}
+ const out=await session.run({[session.inputNames[0]]:new ort.Tensor('float32',f,[1,3,S,S])});
+ const o=out[session.outputNames[0]];
+ const {nc,dets}=decodeYolo(o.data,o.dims,conf,sc,px,py,cv.width,cv.height,0.45);
+ if(CFG.names.length&&nc!==CFG.names.length)throw new Error('Model has '+nc+' classes but labels.json lists '+CFG.names.length);
+ return dets.map(q=>{const label=CFG.names[q.c]||('class_'+q.c),[ins,stg]=splitLabel(label);
+  return{label,insect:ins,stage:stg,confidence:q.s,box:[q.b[0]/cv.width,q.b[1]/cv.height,q.b[2]/cv.width,q.b[3]/cv.height]}})}
+
+$('run').onclick=async()=>{
+ if(!loaded){$('res').innerHTML='<div class="err">Upload an image first.</div>';return}
+ const b=$('run');b.disabled=true;b.textContent='Detecting…';
+ try{await modelReady;
+  if(!session)throw new Error('the model could not be loaded ('+modelErr+'). Check that model/best.onnx exists');
+  await new Promise(r=>setTimeout(r,30));
+  show({model:'best.onnx (in your browser)',detections:await detect(crop,parseFloat($('conf').value)||0.25)});
+ }catch(err){$('res').innerHTML='<div class="err">Could not run detection: '+err.message+'.</div>'}
+ finally{b.disabled=false;b.textContent='Run detection'}};
+
+$('csv').onclick=()=>{
+ if(!rows.length){alert('No history to download yet.');return}
+ const head=['time','file','model','class_label','insect','stage','confidence','x1','y1','x2','y2'],q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[head,...rows].map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));a.download='insect_detections.csv';a.click()};
+$('clr').onclick=()=>{if(confirm('Clear all saved history?')){rows=[];save();hist();metrics('–','–',null)}};
+hist();metrics('–','–',null);
+</script></body></html>
